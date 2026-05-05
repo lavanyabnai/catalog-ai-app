@@ -1,0 +1,55 @@
+<div style="padding: 1rem 0;">
+<div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem;">
+<div>
+<p style="font-size: 18px; font-weight: 500; margin: 0;">Add new SKU</p>
+<p style="font-size: 13px; color: var(--color-text-secondary); margin: 2px 0 0;">Upload a flatlay or worn-on-mannequin photo</p>
+</div>
+<div style="display: flex; gap: 8px;">
+<button style="padding: 8px 14px;">Bulk import CSV</button>
+<button style="padding: 8px 14px; background: var(--color-background-info); color: var(--color-text-info); border-color: var(--color-border-info);">Save and generate</button>
+</div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+<div style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 16px;">
+<p style="font-size: 14px; font-weight: 500; margin: 0 0 10px;">Garment photo</p>
+<div style="border: 1px dashed var(--color-border-secondary); border-radius: var(--border-radius-md); height: 220px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 6px; background: var(--color-background-secondary);">
+<p style="margin: 0; font-size: 14px; color: var(--color-text-secondary);">Drop image here or click to browse</p>
+<p style="margin: 0; font-size: 12px; color: var(--color-text-tertiary);">JPG, PNG, WEBP up to 20 MB</p>
+</div>
+<p style="font-size: 12px; color: var(--color-text-tertiary); margin: 10px 0 0;">Tip: a flatlay on white with no shadows produces the cleanest on-model output.</p>
+</div>
+
+<div style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 16px;">
+<p style="font-size: 14px; font-weight: 500; margin: 0 0 10px;">Attributes</p>
+<div style="display: grid; gap: 10px;">
+<div>
+<label style="font-size: 12px; color: var(--color-text-secondary);">SKU code</label>
+<input type="text" placeholder="SS26-T-014" style="width: 100%; margin-top: 4px;"/>
+</div>
+<div>
+<label style="font-size: 12px; color: var(--color-text-secondary);">Garment type</label>
+<select style="width: 100%; margin-top: 4px;"><option>Top — t-shirt</option><option>Top — blouse</option><option>Dress</option><option>Outerwear</option></select>
+</div>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+<div>
+<label style="font-size: 12px; color: var(--color-text-secondary);">Color</label>
+<input type="text" placeholder="Sage green" style="width: 100%; margin-top: 4px;"/>
+</div>
+<div>
+<label style="font-size: 12px; color: var(--color-text-secondary);">Material</label>
+<input type="text" placeholder="100% linen" style="width: 100%; margin-top: 4px;"/>
+</div>
+</div>
+<div>
+<label style="font-size: 12px; color: var(--color-text-secondary);">Size range</label>
+<input type="text" placeholder="XS, S, M, L, XL" style="width: 100%; margin-top: 4px;"/>
+</div>
+<div>
+<label style="font-size: 12px; color: var(--color-text-secondary);">Brand kit</label>
+<select style="width: 100%; margin-top: 4px;"><option>Acme — coastal aesthetic</option><option>Acme — minimal studio</option></select>
+</div>
+</div>
+</div>
+</div>
+</div>

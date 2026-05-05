@@ -1,0 +1,10 @@
+Short answer: no for most sessions, yes for two specific ones.
+The global context block already locks the scope boundaries, and PROJECT.md (written in session 1) carries the architecture summary forward. The agent doesn't need wireframes to write a database schema or wire up auth — pasting them adds noise and risks the agent inventing UI when you didn't ask for it.
+Where wireframes genuinely help:
+Session 3 — paste wireframe B (the upload form). The session asks for "a minimal web UI matching wireframe B" but doesn't show it. Without the image, the agent will guess at the two-column layout, the dropzone copy, and the attribute fields. With it, you get something close to your spec on the first try.
+Session 6 — paste wireframe C (the generation studio). This is the most layout-sensitive session in the build. The 200/center/220 column split, the variant tile grid, the model spec card, the live SSE updates per tile — all of that is much faster to convey as an image plus a paragraph than as prose alone.
+Where the workflow diagram helps:
+Session 4 is the only place I'd consider pasting it, and even then it's optional. The session covers the inner mechanics of step 3 in the workflow (image generation), and seeing where it sits in the larger pipeline can help the agent reason about the SKU status transitions. But session 4's prompt is already prescriptive about the pipeline stages, so the diagram is a nice-to-have, not load-bearing.
+Where to skip:
+Sessions 1, 2, 5, 7, 8. These are infrastructure, schema, backend logic, and hardening. Wireframes won't change what the agent produces, and the architecture diagram is already encoded in PROJECT.md from session 1.
+One practical note: if you're pasting images into Claude Code, paste them inline at the bottom of the session prompt, after the acceptance criteria, with a short framing line like "Reference: this is wireframe C from the product spec — match the layout in task 1." Putting images above the task list tends to make agents over-index on visual fidelity at the expense of the functional requirements.

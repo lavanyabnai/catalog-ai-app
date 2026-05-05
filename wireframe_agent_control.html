@@ -1,0 +1,68 @@
+<div style="padding: 1rem 0;">
+<div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem;">
+<div>
+<p style="font-size: 18px; font-weight: 500; margin: 0;">Agent control center</p>
+<p style="font-size: 13px; color: var(--color-text-secondary); margin: 2px 0 0;">Configure how autonomously each agent acts on your catalog</p>
+</div>
+<button style="padding: 8px 14px;">View audit log</button>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+
+<div style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px;">
+<div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+<p style="font-size: 14px; font-weight: 500; margin: 0;">Ingestion agent</p>
+<span style="font-size: 11px; padding: 3px 8px; background: var(--color-background-success); color: var(--color-text-success); border-radius: var(--border-radius-md);">running</span>
+</div>
+<p style="font-size: 12px; color: var(--color-text-secondary); margin: 0 0 10px;">Watches supplier feeds and creates draft SKUs</p>
+<div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 8px;">
+<div style="display: flex; justify-content: space-between; padding: 2px 0;"><span>Mode</span><span style="color: var(--color-text-primary);">Auto-create drafts</span></div>
+<div style="display: flex; justify-content: space-between; padding: 2px 0;"><span>Sources</span><span style="color: var(--color-text-primary);">Email, S3, Notion</span></div>
+<div style="display: flex; justify-content: space-between; padding: 2px 0;"><span>Last run</span><span style="color: var(--color-text-primary);">2 minutes ago</span></div>
+</div>
+<button style="font-size: 12px; padding: 6px 10px;">Configure</button>
+</div>
+
+<div style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px;">
+<div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+<p style="font-size: 14px; font-weight: 500; margin: 0;">Generation agent</p>
+<span style="font-size: 11px; padding: 3px 8px; background: var(--color-background-success); color: var(--color-text-success); border-radius: var(--border-radius-md);">running</span>
+</div>
+<p style="font-size: 12px; color: var(--color-text-secondary); margin: 0 0 10px;">Plans and produces full asset bundles per SKU</p>
+<div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 8px;">
+<div style="display: flex; justify-content: space-between; padding: 2px 0;"><span>Models per SKU</span><span style="color: var(--color-text-primary);">4 diverse</span></div>
+<div style="display: flex; justify-content: space-between; padding: 2px 0;"><span>Video</span><span style="color: var(--color-text-primary);">Enabled, 8s</span></div>
+<div style="display: flex; justify-content: space-between; padding: 2px 0;"><span>Languages</span><span style="color: var(--color-text-primary);">EN, ES, FR, DE</span></div>
+</div>
+<button style="font-size: 12px; padding: 6px 10px;">Configure</button>
+</div>
+
+<div style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px;">
+<div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+<p style="font-size: 14px; font-weight: 500; margin: 0;">Channel agent</p>
+<span style="font-size: 11px; padding: 3px 8px; background: var(--color-background-warning); color: var(--color-text-warning); border-radius: var(--border-radius-md);">review mode</span>
+</div>
+<p style="font-size: 12px; color: var(--color-text-secondary); margin: 0 0 10px;">Distributes approved bundles to all sales channels</p>
+<div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 8px;">
+<div style="display: flex; justify-content: space-between; padding: 2px 0;"><span>Mode</span><span style="color: var(--color-text-primary);">Approve before publish</span></div>
+<div style="display: flex; justify-content: space-between; padding: 2px 0;"><span>Channels</span><span style="color: var(--color-text-primary);">5 connected</span></div>
+<div style="display: flex; justify-content: space-between; padding: 2px 0;"><span>Pending</span><span style="color: var(--color-text-primary);">12 SKUs</span></div>
+</div>
+<button style="font-size: 12px; padding: 6px 10px;">Configure</button>
+</div>
+
+<div style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px;">
+<div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+<p style="font-size: 14px; font-weight: 500; margin: 0;">Optimization agent</p>
+<span style="font-size: 11px; padding: 3px 8px; background: var(--color-background-success); color: var(--color-text-success); border-radius: var(--border-radius-md);">running</span>
+</div>
+<p style="font-size: 12px; color: var(--color-text-secondary); margin: 0 0 10px;">Monitors performance and triggers asset refresh</p>
+<div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 8px;">
+<div style="display: flex; justify-content: space-between; padding: 2px 0;"><span>Mode</span><span style="color: var(--color-text-primary);">Suggest, don't act</span></div>
+<div style="display: flex; justify-content: space-between; padding: 2px 0;"><span>Threshold</span><span style="color: var(--color-text-primary);">CVR &lt; 1.2%</span></div>
+<div style="display: flex; justify-content: space-between; padding: 2px 0;"><span>Open A/B tests</span><span style="color: var(--color-text-primary);">3</span></div>
+</div>
+<button style="font-size: 12px; padding: 6px 10px;">Configure</button>
+</div>
+</div>
+</div>

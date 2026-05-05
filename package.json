@@ -1,0 +1,15 @@
+{
+  "name": "catalog-ai",
+  "version": "0.0.1",
+  "private": true,
+  "packageManager": "pnpm@10.28.1",
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "lint": "pnpm --filter web lint",
+    "type-check": "pnpm --filter web type-check"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}
