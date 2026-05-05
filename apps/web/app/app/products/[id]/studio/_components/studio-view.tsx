@@ -2,7 +2,7 @@
 
 import { useEffect, useReducer, useRef, useState } from "react";
 import { openSSEStream, apiGet, apiPost, apiDelete } from "@/lib/api";
-import type { BundleRead, AssetRead, JobRead } from "../page";
+import type { BundleRead, AssetRead } from "../page";
 import { AssetTile } from "./asset-tile";
 import { VideoTile } from "./video-tile";
 import { LeftRail } from "./left-rail";
