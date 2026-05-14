@@ -61,7 +61,7 @@ export function BundleHistory({ productId, token, s3Base }: Props) {
               {b.hero_storage_key ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src={`${s3Base}/${b.hero_storage_key}`}
+                  src={b.hero_storage_key.startsWith("http") ? b.hero_storage_key : `${s3Base}/${b.hero_storage_key}`}
                   alt={`v${b.version} hero`}
                   className="w-full h-full object-cover"
                 />

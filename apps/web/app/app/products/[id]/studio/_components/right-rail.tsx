@@ -60,7 +60,7 @@ export function RightRail({ bundle, heroAsset, bundleStatus, onApprove, token, s
           </p>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={`${s3Base}/${heroAsset.storage_key}`}
+            src={heroAsset.storage_key.startsWith("http") ? heroAsset.storage_key : `${s3Base}/${heroAsset.storage_key}`}
             alt="Hero"
             className="w-full object-cover aspect-[4/5] rounded-md border"
           />

@@ -61,7 +61,7 @@ export function AssetTile({
     <div className="group relative rounded-lg border overflow-hidden bg-muted/30">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={`${s3Base}/${asset.storage_key}`}
+        src={asset.storage_key.startsWith("http") ? asset.storage_key : `${s3Base}/${asset.storage_key}`}
         alt={label}
         className="w-full object-cover aspect-[4/5]"
       />

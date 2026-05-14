@@ -35,7 +35,7 @@ export function VideoTile({ job, asset, jobStatus, s3Base }: Props) {
           preload="none"
           poster={posterSrc}
           className="w-full max-h-72 object-contain"
-          src={`${s3Base}/${asset.storage_key}`}
+          src={asset.storage_key.startsWith("http") ? asset.storage_key : `${s3Base}/${asset.storage_key}`}
         />
         <div className="px-3 py-1.5 bg-muted/40 flex items-center justify-between">
           <span className="text-xs text-muted-foreground">
