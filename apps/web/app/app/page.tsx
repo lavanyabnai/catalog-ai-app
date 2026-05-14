@@ -2,6 +2,7 @@ import Link from "next/link";
 import { LayoutGrid } from "lucide-react";
 import { apiGet } from "@/lib/api";
 import { getToken } from "@/lib/auth";
+import { SAMPLE_PRODUCTS } from "@/lib/sample-data";
 
 interface ProductListItem {
   id: string;
@@ -52,7 +53,7 @@ export default async function WorkspacePage() {
   try {
     data = await apiGet<ProductListResponse>("/api/v1/products", token ?? undefined);
   } catch {
-    // API not reachable locally
+    data = { items: SAMPLE_PRODUCTS, total: SAMPLE_PRODUCTS.length, cursor: null };
   }
 
   const live       = data.items.filter((p) => p.status === "approved").length;

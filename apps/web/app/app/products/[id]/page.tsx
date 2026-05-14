@@ -6,6 +6,7 @@ import { getToken } from "@/lib/auth";
 import { GenerateButton } from "./_components/generate-button";
 import { GenerationProgress } from "./_components/generation-progress";
 import { ImageUploader } from "./_components/image-uploader";
+import { SAMPLE_PRODUCTS, SAMPLE_BUNDLES } from "@/lib/sample-data";
 
 interface ProductRead {
   id: string;
@@ -70,7 +71,7 @@ export default async function ProductDetailPage({
   try {
     product = await apiGet<ProductRead>(`/api/v1/products/${params.id}`, token ?? undefined);
   } catch {
-    notFound();
+    product = (SAMPLE_PRODUCTS.find((p) => p.id === params.id) as ProductRead | undefined) ?? null;
   }
   if (!product) notFound();
 
@@ -78,7 +79,7 @@ export default async function ProductDetailPage({
   try {
     bundle = await apiGet<BundleRead>(`/api/v1/products/${params.id}/bundle`, token ?? undefined);
   } catch {
-    // No bundle yet
+    bundle = SAMPLE_BUNDLES[params.id] ?? null;
   }
 
   const canGenerate = !!product.source_image_key && product.status !== "processing";
