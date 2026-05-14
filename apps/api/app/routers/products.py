@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel
 from fastapi.responses import StreamingResponse
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -41,12 +42,31 @@ from app.schemas.generation import (
     PlanResponse,
 )
 from app.services import audit
+from app.services.image_analyzer import analyze_garment_image
 from app.services.plan_builder import GenerationShot, build_plan, get_required_aspect_ratios
-from app.services.storage import generate_presigned_upload_url
+from app.services.storage import generate_presigned_upload_url, upload_image_b64
 
 router = APIRouter(prefix="/products", tags=["products"])
 
 _PAGE_SIZE = 20
+
+
+class AnalyzeImageRequest(BaseModel):
+    image_b64: str
+    media_type: str = "image/jpeg"
+
+
+class UploadImageRequest(BaseModel):
+    image_b64: str
+    media_type: str = "image/jpeg"
+
+
+class AnalyzeImageResponse(BaseModel):
+    name: str | None = None
+    color: str | None = None
+    material: str | None = None
+    category_hint: str | None = None
+    size_range: str | None = None
 
 
 def _encode_cursor(dt: datetime) -> str:
@@ -106,6 +126,20 @@ def _shots_to_specs(shots: list[GenerationShot]) -> list[GenerationShotSpec]:
         )
         for s in shots
     ]
+
+
+# ---------------------------------------------------------------------------
+# AI image analysis
+# ---------------------------------------------------------------------------
+
+@router.post("/analyze-image", response_model=AnalyzeImageResponse)
+async def analyze_image(
+    body: AnalyzeImageRequest,
+    user: CurrentUser = Depends(get_current_user),
+) -> Any:
+    """Use Claude vision to extract garment attributes from a base64-encoded image."""
+    result = await analyze_garment_image(body.image_b64, body.media_type)
+    return AnalyzeImageResponse(**result)
 
 
 # ---------------------------------------------------------------------------
@@ -245,15 +279,35 @@ async def update_product(
     return product
 
 
-@router.post("/{product_id}/upload-url")
-async def get_upload_url(
+@router.post("/{product_id}/upload")
+async def upload_product_image(
     product_id: uuid.UUID,
+    body: UploadImageRequest,
+    view: str = Query(default="front", pattern="^(front|back|detail)$"),
     db: AsyncSession = Depends(get_db),
     user: CurrentUser = Depends(get_current_user),
 ) -> dict[str, str]:
-    """Return a presigned S3 PUT URL valid for 5 minutes."""
+    """Upload a base64 image to Cloudinary (or S3 fallback) and return its public URL."""
     await _get_product_or_404(product_id, db, user)
-    key = f"tenants/{user.tenant_id}/products/{product_id}/source.jpg"
+    public_id = f"tenants/{user.tenant_id}/products/{product_id}/source_{view}"
+    # Run the blocking Cloudinary/S3 SDK call in a thread so it doesn't freeze the event loop
+    url = await asyncio.to_thread(upload_image_b64, body.image_b64, public_id, body.media_type)
+    return {"url": url, "key": url}
+
+
+@router.post("/{product_id}/upload-url")
+async def get_upload_url(
+    product_id: uuid.UUID,
+    view: str = Query(default="front", pattern="^(front|back|detail)$"),
+    db: AsyncSession = Depends(get_db),
+    user: CurrentUser = Depends(get_current_user),
+) -> dict[str, str]:
+    """Return a presigned S3 PUT URL valid for 5 minutes.
+
+    Pass ?view=front|back|detail to get a key for each angle.
+    """
+    await _get_product_or_404(product_id, db, user)
+    key = f"tenants/{user.tenant_id}/products/{product_id}/source_{view}.jpg"
     url = generate_presigned_upload_url(key, content_type="image/jpeg")
     return {"url": url, "key": key}
 

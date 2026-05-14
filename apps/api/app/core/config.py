@@ -26,7 +26,10 @@ class Settings(BaseSettings):
     s3_secret_access_key: str = "minioadmin"
     s3_region: str = "us-east-1"
 
+    cloudinary_url: str = ""
+
     fal_key: str = ""
+    anthropic_api_key: str = ""
 
     sentry_dsn: str = ""
     langfuse_public_key: str = ""

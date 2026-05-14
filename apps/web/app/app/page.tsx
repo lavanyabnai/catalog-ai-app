@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LayoutGrid } from "lucide-react";
 import { apiGet } from "@/lib/api";
 import { getToken } from "@/lib/auth";
 
@@ -17,104 +18,159 @@ interface ProductListResponse {
   cursor: string | null;
 }
 
-export default async function ProductsPage() {
+// Relative time label from ISO string
+function relativeTime(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60_000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h`;
+  return `${Math.floor(hrs / 24)}d`;
+}
+
+// Derive a human activity line from a product's status + timestamps
+function activityLine(p: ProductListItem): string {
+  switch (p.status) {
+    case "processing":
+      return `Generation agent is processing SKU ${p.code}`;
+    case "ready_for_review":
+      return `Generation agent finished bundle for SKU ${p.code}`;
+    case "approved":
+      return `Bundle approved for SKU ${p.code}`;
+    default:
+      return p.source_image_key
+        ? `SKU ${p.code} uploaded — ready to generate`
+        : `SKU ${p.code} created as draft`;
+  }
+}
+
+export default async function WorkspacePage() {
   const token = await getToken();
 
   let data: ProductListResponse = { items: [], total: 0, cursor: null };
   try {
     data = await apiGet<ProductListResponse>("/api/v1/products", token ?? undefined);
   } catch {
-    // API may not be running locally; show empty state
+    // API not reachable locally
   }
 
+  const live       = data.items.filter((p) => p.status === "approved").length;
+  const generating = data.items.filter((p) => p.status === "processing").length;
+  const reviewing  = data.items.filter((p) => p.status === "ready_for_review").length;
+
+  // Activity feed: all products sorted newest first, last 6
+  const activity = [...data.items]
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, 6);
+
+  // Needs attention: ready-for-review products
+  const attention = data.items.filter((p) => p.status === "ready_for_review").slice(0, 4);
+
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
+    <div className="space-y-8">
+      {/* Page header */}
+      <div className="flex items-end justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Products</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Catalog workspace</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {data.total} product{data.total !== 1 ? "s" : ""}
+            catalog-ai · all collections
           </p>
         </div>
         <Link
-          href="/app/new"
-          className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors"
+          href="/app/catalog"
+          className="inline-flex items-center gap-1.5 bg-foreground text-background rounded-full px-5 py-2.5 text-sm font-medium hover:opacity-80 transition-opacity"
         >
-          New product
+          <LayoutGrid className="h-3.5 w-3.5" />
+          View Catalog
         </Link>
       </div>
 
-      {data.items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-20 text-center">
-          <p className="text-muted-foreground text-sm">No products yet.</p>
-          <Link
-            href="/app/new"
-            className="mt-4 text-sm font-medium text-primary hover:underline"
-          >
-            Upload your first garment →
-          </Link>
-        </div>
-      ) : (
-        <div className="rounded-lg border overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/50">
-              <tr>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Code</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Name</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Status</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Created</th>
-                <th className="px-4 py-3" />
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {data.items.map((p) => (
-                <tr key={p.id} className="hover:bg-muted/30 transition-colors">
-                  <td className="px-4 py-3 font-mono text-xs">{p.code}</td>
-                  <td className="px-4 py-3 font-medium">{p.name}</td>
-                  <td className="px-4 py-3">
-                    <StatusBadge status={p.status} />
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {new Date(p.created_at).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <Link
-                      href={`/app/products/${p.id}`}
-                      className="text-primary hover:underline text-xs font-medium"
-                    >
-                      View →
-                    </Link>
-                  </td>
-                </tr>
+      {/* Stat cards */}
+      <div className="grid grid-cols-4 gap-4">
+        <StatCard label="SKUs live"        value={live}       />
+        <StatCard label="In generation"    value={generating} />
+        <StatCard label="Awaiting review"  value={reviewing}  />
+        <StatCard label="Total SKUs"       value={data.total} />
+      </div>
+
+      {/* Activity + Attention */}
+      <div className="grid grid-cols-5 gap-6">
+        {/* Agent activity */}
+        <div className="col-span-3 rounded-xl border border-border bg-card p-6">
+          <h2 className="font-semibold text-sm mb-4">Agent activity</h2>
+
+          {activity.length === 0 ? (
+            <p className="text-sm text-muted-foreground py-8 text-center">
+              No activity yet —{" "}
+              <Link href="/app/new" className="underline underline-offset-2">
+                upload your first SKU
+              </Link>
+            </p>
+          ) : (
+            <ul className="divide-y divide-border">
+              {activity.map((p) => (
+                <li key={p.id} className="flex items-center justify-between py-3.5 gap-4">
+                  <Link
+                    href={`/app/products/${p.id}`}
+                    className="text-sm text-foreground hover:underline underline-offset-2 line-clamp-1"
+                  >
+                    {activityLine(p)}
+                  </Link>
+                  <span className="text-xs text-muted-foreground shrink-0 tabular-nums">
+                    {relativeTime(p.created_at)}
+                  </span>
+                </li>
               ))}
-            </tbody>
-          </table>
+            </ul>
+          )}
         </div>
-      )}
+
+        {/* Needs your attention */}
+        <div className="col-span-2 space-y-3">
+          <h2 className="font-semibold text-sm">Needs your attention</h2>
+
+          {attention.length === 0 ? (
+            <div className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">
+              Nothing needs attention right now.
+            </div>
+          ) : (
+            attention.map((p) => (
+              <Link
+                key={p.id}
+                href={`/app/products/${p.id}/studio`}
+                className="block rounded-xl bg-amber-50 border border-amber-100 px-4 py-3.5 hover:bg-amber-100 transition-colors"
+              >
+                <p className="text-sm font-semibold text-amber-800">
+                  {p.name}
+                </p>
+                <p className="text-xs text-amber-600 mt-0.5">
+                  SKU {p.code} · ready for review
+                </p>
+              </Link>
+            ))
+          )}
+
+          {/* Divider + link to catalog */}
+          <div className="pt-2">
+            <Link
+              href="/app/catalog"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2"
+            >
+              View all {data.total} products →
+            </Link>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const styles: Record<string, string> = {
-    draft: "bg-slate-100 text-slate-700",
-    processing: "bg-yellow-100 text-yellow-800",
-    ready_for_review: "bg-blue-100 text-blue-800",
-    approved: "bg-green-100 text-green-800",
-    archived: "bg-red-100 text-red-700",
-  };
-  const label: Record<string, string> = {
-    draft: "Draft",
-    processing: "Processing",
-    ready_for_review: "Ready for review",
-    approved: "Approved",
-    archived: "Archived",
-  };
+function StatCard({ label, value }: { label: string; value: number | string }) {
   return (
-    <span
-      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${styles[status] ?? "bg-slate-100 text-slate-700"}`}
-    >
-      {label[status] ?? status}
-    </span>
+    <div className="rounded-xl border border-border bg-secondary/60 px-5 py-4">
+      <p className="text-xs text-muted-foreground mb-2">{label}</p>
+      <p className="text-3xl font-bold tracking-tight">{value}</p>
+    </div>
   );
 }

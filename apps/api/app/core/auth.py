@@ -48,8 +48,7 @@ async def get_current_user(
         )
 
     await db.execute(
-        text("SET LOCAL app.current_tenant_id = :tid"),
-        {"tid": str(user.tenant_id)},
+        text(f"SET LOCAL app.current_tenant_id = '{user.tenant_id}'")
     )
 
     return CurrentUser(

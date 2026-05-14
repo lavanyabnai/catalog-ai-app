@@ -33,7 +33,7 @@ export function GenerateButton({ productId, canGenerate, token }: Props) {
       <button
         onClick={handleGenerate}
         disabled={!canGenerate || loading}
-        className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        className="inline-flex items-center justify-center rounded-full bg-foreground text-background px-5 py-2 text-sm font-medium hover:opacity-80 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
       >
         {loading ? "Queuing…" : "Generate →"}
       </button>

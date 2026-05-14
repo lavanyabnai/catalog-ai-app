@@ -24,6 +24,8 @@ _db_url = os.environ.get(
     "postgresql://postgres:postgres@localhost:5432/catalog_ai",
 )
 _db_url = _db_url.replace("postgresql+asyncpg://", "postgresql://")
+if "neon.tech" in _db_url and "sslmode" not in _db_url:
+    _db_url += ("&" if "?" in _db_url else "?") + "sslmode=require"
 config.set_main_option("sqlalchemy.url", _db_url)
 
 

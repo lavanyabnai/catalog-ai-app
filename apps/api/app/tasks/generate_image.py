@@ -197,14 +197,14 @@ async def _create_aspect_variants(
             f"tenants/{job.tenant_id}/products/{job.product_id}"
             f"/v{bundle_version}/img_{job.id}_{ar.replace(':', 'x')}.webp"
         )
-        upload_bytes(variant_key, crop_bytes, "image/webp")
+        variant_url = upload_bytes(variant_key, crop_bytes, "image/webp")
 
         variant = GeneratedAsset(
             tenant_id=job.tenant_id,
             product_id=job.product_id,
             job_id=job.id,
             kind=AssetKind.image_variant,
-            storage_key=variant_key,
+            storage_key=variant_url,
             width=crop_w,
             height=crop_h,
             mime_type="image/webp",
@@ -249,9 +249,10 @@ async def _check_bundle_complete(db: AsyncSession, job: GenerationJob) -> None:
     if not image_jobs or not all(j.status in terminal for j in image_jobs):
         return  # image jobs still running
 
-    # At least one image succeeded → mark product ready_for_review
+    product = await db.get(Product, job.product_id)
+
     if any(j.status == JobStatus.succeeded for j in image_jobs):
-        product = await db.get(Product, job.product_id)
+        # At least one image succeeded → mark product ready_for_review
         if product and product.status == ProductStatus.processing:
             product.status = ProductStatus.ready_for_review
             await audit.record(
@@ -261,6 +262,19 @@ async def _check_bundle_complete(db: AsyncSession, job: GenerationJob) -> None:
                 entity_type="product",
                 entity_id=job.product_id,
                 action="ready_for_review",
+                payload={"bundle_id": bundle_id_str},
+            )
+    else:
+        # All images failed → reset to draft so the merchant can retry
+        if product and product.status == ProductStatus.processing:
+            product.status = ProductStatus.draft
+            await audit.record(
+                db,
+                tenant_id=job.tenant_id,
+                actor_id=None,
+                entity_type="product",
+                entity_id=job.product_id,
+                action="generation_failed",
                 payload={"bundle_id": bundle_id_str},
             )
 
@@ -387,12 +401,12 @@ async def run_generate_image_task(job_id: str) -> dict[str, str]:
             # --- Download primary image bytes ---
             img_bytes = await client.download_url(gen_result.image_url)
 
-            # --- Upload primary to S3 ---
+            # --- Upload primary image ---
             asset_key = (
                 f"tenants/{job.tenant_id}/products/{job.product_id}"
                 f"/v{bundle_version}/img_{job_id}.webp"
             )
-            upload_bytes(asset_key, img_bytes, "image/webp")
+            asset_url = upload_bytes(asset_key, img_bytes, "image/webp")
 
             # --- Model spec metadata ---
             height_cm: int = persona.get("height_cm", 0)
@@ -408,7 +422,7 @@ async def run_generate_image_task(job_id: str) -> dict[str, str]:
                 product_id=job.product_id,
                 job_id=job.id,
                 kind=AssetKind.image_on_model,
-                storage_key=asset_key,
+                storage_key=asset_url,
                 width=gen_result.width,
                 height=gen_result.height,
                 mime_type="image/webp",
@@ -447,7 +461,7 @@ async def run_generate_image_task(job_id: str) -> dict[str, str]:
                 entity_id=job.id,
                 action="succeeded",
                 payload={
-                    "asset_key": asset_key,
+                    "asset_url": asset_url,
                     "model_id": gen_result.model_id,
                     "variants_created": len(required_ars) - 1,
                 },

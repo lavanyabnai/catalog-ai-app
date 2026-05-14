@@ -164,8 +164,8 @@ async def run_generate_video_task(job_id: str) -> dict[str, str]:
             video_key = f"{base_prefix}/video_{job_id}.mp4"
             poster_key = f"{base_prefix}/video_{job_id}_poster.jpg"
 
-            upload_bytes(video_key, video_bytes, "video/mp4")
-            upload_bytes(poster_key, poster_bytes, "image/jpeg")
+            video_url = upload_bytes(video_key, video_bytes, "video/mp4")
+            poster_url = upload_bytes(poster_key, poster_bytes, "image/jpeg")
 
             # --- Create video asset row ---
             video_asset = GeneratedAsset(
@@ -173,13 +173,13 @@ async def run_generate_video_task(job_id: str) -> dict[str, str]:
                 product_id=job.product_id,
                 job_id=job.id,
                 kind=AssetKind.video_on_model,
-                storage_key=video_key,
+                storage_key=video_url,
                 mime_type="video/mp4",
                 duration_ms=gen_result.duration_ms,
                 asset_metadata={
                     "motion": motion,
                     "scene": scene,
-                    "poster_key": poster_key,
+                    "poster_url": poster_url,
                     "hero_asset_id": str(hero.id),
                     "model_id": gen_result.model_id,
                     "latency_ms": gen_result.latency_ms,
@@ -195,7 +195,7 @@ async def run_generate_video_task(job_id: str) -> dict[str, str]:
                 product_id=job.product_id,
                 job_id=job.id,
                 kind=AssetKind.image_variant,
-                storage_key=poster_key,
+                storage_key=poster_url,
                 mime_type="image/jpeg",
                 asset_metadata={"role": "video_poster"},
                 version=bundle_version,
@@ -218,8 +218,8 @@ async def run_generate_video_task(job_id: str) -> dict[str, str]:
                 entity_id=job.id,
                 action="succeeded",
                 payload={
-                    "video_key": video_key,
-                    "poster_key": poster_key,
+                    "video_url": video_url,
+                    "poster_url": poster_url,
                     "duration_ms": gen_result.duration_ms,
                     "model_id": gen_result.model_id,
                 },
