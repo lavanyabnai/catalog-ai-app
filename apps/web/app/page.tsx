@@ -18,14 +18,11 @@ export default function Home() {
           <a href="#outputs" className="hover:text-gray-900 transition-colors">Outputs</a>
         </div>
         <div className="flex items-center gap-2.5">
-          <a href="/sign-in" className="text-sm text-gray-500 hover:text-gray-900 transition-colors px-3 py-1.5">
-            Sign in
-          </a>
           <a
-            href="/sign-up"
+            href="/app"
             className="text-sm bg-gray-900 text-white px-4 py-2 rounded-full hover:opacity-80 transition-opacity font-medium"
           >
-            Try free
+            Open app
           </a>
         </div>
       </nav>
@@ -55,7 +52,7 @@ export default function Home() {
 
         <div className="flex items-center justify-center gap-3 flex-wrap">
           <a
-            href="/sign-up"
+            href="/app"
             className="bg-gray-900 text-white px-7 py-3 rounded-full text-sm font-semibold hover:opacity-85 transition-opacity"
           >
             Generate →
@@ -189,7 +186,7 @@ export default function Home() {
         </p>
         <div className="flex items-center justify-center gap-3">
           <a
-            href="/sign-up"
+            href="/app"
             className="bg-gray-900 text-white px-8 py-3.5 rounded-full text-sm font-semibold hover:opacity-85 transition-opacity"
           >
             Get started free →
@@ -212,8 +209,8 @@ export default function Home() {
           <span>catalog-ai — AI catalog generation for fashion retailers</span>
         </div>
         <div className="flex gap-5">
-          <a href="/sign-in" className="hover:text-gray-700 transition-colors">Sign in</a>
-          <a href="/sign-up" className="hover:text-gray-700 transition-colors">Sign up</a>
+          <a href="/app" className="hover:text-gray-700 transition-colors">Sign in</a>
+          <a href="/app" className="hover:text-gray-700 transition-colors">Sign up</a>
           <a href="/app" className="hover:text-gray-700 transition-colors">Dashboard</a>
         </div>
       </footer>
