@@ -69,10 +69,18 @@ export default function Home() {
       {/* ── Hero visual strip ─────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-6 pb-20">
         <div className="grid grid-cols-4 gap-3 rounded-3xl overflow-hidden">
-          {["bg-stone-100", "bg-amber-50", "bg-rose-50", "bg-sky-50"].map((bg, i) => (
-            <div key={i} className={`${bg} aspect-[3/4] rounded-2xl flex items-end p-3`}>
-              <span className="text-[10px] text-gray-400 font-medium">
-                {["Kurta · Studio", "Saree · Editorial", "Lehenga · PDP", "Dress · Marketplace"][i]}
+          {[
+            { img: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80", label: "Kurta · Studio" },
+            { img: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600&q=80", label: "Saree · Editorial" },
+            { img: "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=600&q=80", label: "Lehenga · PDP" },
+            { img: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600&q=80", label: "Dress · Marketplace" },
+          ].map((item, i) => (
+            <div key={i} className="aspect-[3/4] rounded-2xl overflow-hidden relative">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={item.img} alt={item.label} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+              <span className="absolute bottom-3 left-3 text-[10px] text-white/90 font-medium">
+                {item.label}
               </span>
             </div>
           ))}
