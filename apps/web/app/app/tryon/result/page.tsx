@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ArrowLeft, Download, RefreshCw, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -38,7 +39,7 @@ function Thumb({
   );
 }
 
-export default function TryOnResultPage() {
+function TryOnResult() {
   const params = useSearchParams();
   const router = useRouter();
 
@@ -176,5 +177,13 @@ export default function TryOnResultPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function TryOnResultPage() {
+  return (
+    <Suspense>
+      <TryOnResult />
+    </Suspense>
   );
 }
