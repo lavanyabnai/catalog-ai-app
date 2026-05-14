@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { apiGet } from "@/lib/api";
 import { getToken } from "@/lib/auth";
 import { StudioView } from "./_components/studio-view";
-import { SAMPLE_PRODUCTS, SAMPLE_BUNDLES } from "@/lib/sample-data";
+import { SAMPLE_PRODUCTS, SAMPLE_BUNDLES, SAMPLE_PERSONAS } from "@/lib/sample-data";
 
 interface PersonaRead {
   id: string;
@@ -91,7 +91,7 @@ export default async function StudioPage({
   try {
     personas = await apiGet<PersonaRead[]>("/api/v1/personas", token ?? undefined);
   } catch {
-    // Non-fatal — StudioView handles empty personas
+    personas = SAMPLE_PERSONAS;
   }
 
   return (
