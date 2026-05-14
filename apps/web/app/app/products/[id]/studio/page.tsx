@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { apiGet } from "@/lib/api";
 import { getToken } from "@/lib/auth";
 import { StudioView } from "./_components/studio-view";
+import { SAMPLE_PRODUCTS, SAMPLE_BUNDLES } from "@/lib/sample-data";
 
 interface PersonaRead {
   id: string;
@@ -73,9 +74,8 @@ export default async function StudioPage({
   let product: ProductRead | null = null;
   try {
     product = await apiGet<ProductRead>(`/api/v1/products/${params.id}`, token ?? undefined);
-  } catch (err: unknown) {
-    if (err instanceof Error && err.message.includes("404")) notFound();
-    throw err;
+  } catch {
+    product = (SAMPLE_PRODUCTS.find((p) => p.id === params.id) as ProductRead | undefined) ?? null;
   }
   if (!product) notFound();
 
@@ -83,14 +83,15 @@ export default async function StudioPage({
   try {
     bundle = await apiGet<BundleRead>(`/api/v1/products/${params.id}/bundle`, token ?? undefined);
   } catch {
-    // No bundle yet
+    const s = SAMPLE_BUNDLES[params.id];
+    if (s) bundle = s as unknown as BundleRead;
   }
 
   let personas: PersonaRead[] = [];
   try {
     personas = await apiGet<PersonaRead[]>("/api/v1/personas", token ?? undefined);
   } catch {
-    // Non-fatal
+    // Non-fatal — StudioView handles empty personas
   }
 
   return (
