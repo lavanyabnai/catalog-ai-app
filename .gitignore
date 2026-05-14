@@ -45,3 +45,5 @@ apps/api/alembic/versions/*.py.bak
 
 # Logs
 *.log
+
+.vercel
